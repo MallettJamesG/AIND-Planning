@@ -165,12 +165,6 @@ class AirCargoProblem(Problem):
         # TODO implement
         new_state = FluentState([], [])
         old_state=decode_state(state,self.state_map) #Old_state.sentence() returns all the positive and negative conditions of the state
-        # print("old_state.pos",old_state.pos)
-        # print("old_state.neg",old_state.neg)
-        # print("action.precond_pos",action.precond_pos)
-        # print("action.precond_neg",action.precond_neg)
-        # print("action.effect_add",action.effect_add)
-        # print("action.effect_rem",action.effect_rem)
 
         for pos_clause in old_state.pos:
             if pos_clause not in action.effect_rem:
@@ -190,11 +184,6 @@ class AirCargoProblem(Problem):
             if add_action not in new_state.pos:
                 new_state.pos.append(add_action)
 
-        # print("new_state.pos",new_state.pos)
-        # print("new_state.neg",new_state.neg)
-        # print("The goal is ", self.goal)
-        # print("Is this the goal state :", self.goal_test(encode_state(new_state, self.state_map)))
-        # input('')
         return encode_state(new_state, self.state_map)
 
     def goal_test(self, state: str) -> bool:

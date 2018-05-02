@@ -310,82 +310,19 @@ class PlanningGraph():
         #   action node is added, it MUST be connected to the S node instances in the appropriate s_level set.
 
         self.a_levels.append(set())
-        # print("level inside the add_action_level",level)
         action_nodes_add=set()
-
-        # for node in self.s_levels[level]:
-            # print("node symbol and arg",node.symbol, node.is_pos)
-        # print("\n")
         for action in self.all_actions:
-            # print("The action",action)
-            # print("action precondition pos",action.precond_pos)
-            # print("action precondition neg",action.precond_neg)
-            # print("action effect_add",action.effect_add)
-            # print("action effect_rem",action.effect_rem)
-            # is_Possible=True
-            # input('')
-            #
             action_node=PgNode_a(action)
-            # print("action_node and its prenodes")
-            # action_node.show()
-            # for pre in action_node.prenodes:
-            #     pre.show()
-            # input('')
             if action_node.prenodes.issubset(self.s_levels[level]):
-
                 #Then all of the precondtions of the action_node appear in the s_level
-                # print("It is a subset")
-                # input('')
-                # print("action_nodes_add",action_nodes_add,type(action_nodes_add),"action_node",action_node,type(action_node))
                 action_nodes_add.add(action_node)
-                # print("Added to nodes to add")
                 #Now need to populate the children and parents for the nodes in the previous s literal_list and the new action
                 for prev_s_node in self.s_levels[level]:
-                    # print("here")
-                    # input('')
                     if prev_s_node in action_node.prenodes:
-                        # print("the previous node is in the prenodes")
                         action_node.parents.add(prev_s_node)
                         prev_s_node.children.add(action_node)
-                        # print(action_node.parents,prev_s_node.children)
-                    # print("here 2")
-                    # input('')
 
-
-        # print("Adding those nodes to the a_levels")
         self.a_levels[level]=action_nodes_add
-        # print("Success, Going to show the nodes now:")
-        # input('')
-        # print("Nodes of S0")
-        # for node in self.s_levels[level]:
-        #     node.show()
-        # print("\nNodes of A",level)
-        # for node in self.a_levels[level]:
-        #     node.show()
-        #
-        # input('')
-            # Check if all its positve preconditions are met in the previous state
-            #
-            # for action_precondition in action.precond_pos:
-            #     if action_precondition not in self.s_levels[level].symbol:
-            #         #Need to see if the precondition is in the list of sybols of the previous S literal
-            #         is_Possible = False
-            #
-            #     if action_precondition in self.s_levels[level].symbol and self.s_levels[level].is_pos != True:
-            #         # Need to try find a way to check if that symbol appears in the literal and its corresponding value is True
-            #         is_Possible = False
-
-
-            # Check if all its negative preconditions are met in the previous state
-            # for pos_neg in action.precond_neg:
-            #     if pos_neg not in self.fs.neg:
-            #         is_Possible = False
-            #
-            # # If both positive and negative preconditions are met
-            # if is_Possible:
-            #     # print("Appending action")
-            #     possible_actions.append(action)
-            #     to_add=PgNode_a(action)
 
 
 
@@ -410,53 +347,20 @@ class PlanningGraph():
         self.s_levels.append(set())
         s_literals_to_add=set()
 
-        # print("Adding literals to level",level)
         for action_node in self.a_levels[level-1]:
-            # print("node.action",node.action)
-            # print("node.prenodes",node.prenodes)
-            # print("node.effnodes",node.effnodes)
-
             for effect in action_node.effnodes:
-                # print("The effect node symbol and is_pos ", effect.symbol,effect.is_pos)
-                # print("adding it into the s_level")
                 if effect not in s_literals_to_add:
-                    # print("here")
-                    # input('')
                     new_s_node=PgNode_s(effect.symbol, effect.is_pos)
                     s_literals_to_add.add(new_s_node)
                     new_s_node.parents.add(action_node)
                     action_node.children.add(new_s_node)
-                    # print("here2")
-                    # input('')
                 else:
                     for s_node in s_literals_to_add:
-                        # print("here3")
-                        # input('')
                         if s_node==effect:
-                            # print("here4")
-                            # input('')
                             s_node.parents.add(action_node)
                             action_node.children.add(s_node)
-                            # print("here5")
-                            # input('')
-                # if self.s_levels[level]: print("It is here")
-                # else: print("doesnt exitst")
-
-                # effect.show()
-                # input('')
 
         self.s_levels[level]=s_literals_to_add
-        # print("\nNodes in the action level")
-        # for node in self.a_levels[level-1]:
-        #     node.show()
-        # print("\nNodes in the new S level", level)
-        # for node in self.s_levels[level]:
-        #     node.show()
-        # input('')
-        # for literal in self.fs.pos:
-        #     self.s_levels[level].add(PgNode_s(literal, True))
-        # for literal in self.fs.neg:
-        #     self.s_levels[level].add(PgNode_s(literal, False))
 
     def update_a_mutex(self, nodeset):
         """ Determine and update sibling mutual exclusion for A-level nodes
@@ -514,19 +418,11 @@ class PlanningGraph():
         :param node_a2: PgNode_a
         :return: bool
         """
-        # TODO test for Inconsistent Effects between nodes
-        # print("node_a1 is ", node_a1.action)
-        # print("node_a2 is ", node_a2.action)
         for node_1 in node_a1.effnodes:
             for node_2 in node_a2.effnodes:
-                # print("node_a1.effnodes",node_1.symbol,node_1.is_pos)
-                # print("node_a2.effnodes",node_2.symbol,node_2.is_pos)
                 if node_1.symbol == node_2.symbol and node_1.is_pos !=node_2.is_pos:
-                    # print("Symbols are the same, but they are opposite, returning True")
-                    # input('')
                     return True
 
-        # input('')
         return False
 
     def interference_mutex(self, node_a1: PgNode_a, node_a2: PgNode_a) -> bool:
@@ -543,7 +439,6 @@ class PlanningGraph():
         :param node_a2: PgNode_a
         :return: bool
         """
-        # TODO test for Interference between nodes
         # Check Node_a1s effects against a2's pre conditions
         for node_1 in node_a1.effnodes:
             for node_2 in node_a2.prenodes:
@@ -569,26 +464,10 @@ class PlanningGraph():
         :return: bool
         """
 
-        # TODO test for Competing Needs between nodes
-        # print("\nEntering in competing needs:")
-        # print("node 1",node_a1.action)
-        # print("node 2",node_a2.action)
-        # print("Going in")
         for node_1 in node_a1.parents:
             for node_2 in node_a2.parents:
-                # if node_1.symbol == node_2.symbol and node_1.symbol!=node_2.symbol:
-                #     print("node_1",node_1.symbol,node_1.is_pos)
-                #     print("node_2",node_2.symbol,node_2.is_pos)
-                #     print("Same symbol, opposite sign")
-                #     input('')
                 if node_1.is_mutex(node_2):
-                    # print("Mutex")
                     return True
-
-                # input('')
-        # print("None of the above have competing needs")
-        # input('')
-        # print("\n")
         return False
 
     def update_s_mutex(self, nodeset: set):
@@ -623,7 +502,6 @@ class PlanningGraph():
         :param node_s2: PgNode_s
         :return: bool
         """
-        # TODO test for negation between nodes
         if node_s1.symbol == node_s2.symbol and node_s1.is_pos!=node_s2.is_pos:
             return True
         return False
@@ -644,13 +522,9 @@ class PlanningGraph():
         :param node_s2: PgNode_s
         :return: bool
         """
-        # TODO test for Inconsistent Support between nodes
         for action1 in node_s1.parents:
             for action2 in node_s2.parents:
-
                 if not action1.is_mutex(action2):
-                    # action1.show()
-                    # action2.show()
                     return False
         return True
 
@@ -660,18 +534,10 @@ class PlanningGraph():
         :return: int
         """
         level_sum = 0
-        # TODO implement
-        # for each goal in the problem, determine the level cost, then add them together
         for goal in self.problem.goal:
-            # print("goal",goal)
             goal_s=PgNode_s(goal,True)
-            # reached=False
             for level_counter,s_state in enumerate(self.s_levels):
-
-                # for node in s_state:
-                #     print("node",node.symbol)
                 if goal_s in s_state:
-                    # reached=True
                     level_sum+=level_counter
                     break
 
